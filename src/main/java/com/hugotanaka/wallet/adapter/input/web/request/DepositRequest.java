@@ -7,8 +7,6 @@ import java.util.UUID;
 
 @Data
 public class DepositRequest {
-
     private UUID walletId;
-
     private BigDecimal amount;
 }

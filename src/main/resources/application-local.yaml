@@ -1,0 +1,11 @@
+spring:
+  application.name: wallet-service
+  datasource:
+    url: jdbc:oracle:thin:@localhost:1521:xe
+    username: your_user
+    password: your_password
+    driver-class-name: oracle.jdbc.OracleDriver
+  jpa:
+    database-platform: org.hibernate.dialect.Oracle12cDialect
+    hibernate:
+      ddl-auto: update
