@@ -34,7 +34,13 @@ public class CreateWalletUseCaseImplTest {
 
         when(mockPort.save(any())).thenAnswer(invocation -> {
             WalletDomain arg = invocation.getArgument(0);
-            return new WalletDomain(UUID.randomUUID(), arg.getUserId(), arg.getBalance(), arg.getCreatedAt());
+            return new WalletDomain(
+                    UUID.randomUUID(),
+                    arg.getUserId(),
+                    arg.getBalance(),
+                    arg.getCreatedAt(),
+                    arg.getUpdatedAt()
+            );
         });
 
         // when

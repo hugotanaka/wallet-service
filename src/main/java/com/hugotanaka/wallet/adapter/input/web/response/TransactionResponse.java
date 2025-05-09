@@ -13,5 +13,5 @@ public class TransactionResponse {
     private UUID targetWalletId;
     private BigDecimal amount;
     private String type;
-    private LocalDateTime timestamp;
+    private LocalDateTime createdAt;
 }

@@ -1,11 +1,11 @@
 plugins {
-    id 'java'
-    id 'org.springframework.boot' version '3.4.5'
-    id 'io.spring.dependency-management' version '1.1.7'
+    id "java"
+    id "org.springframework.boot" version "3.2.5"
+    id "io.spring.dependency-management" version "1.1.4"
 }
 
-group = 'com.hugotanaka'
-version = '0.0.1-SNAPSHOT'
+group = "com.hugotanaka"
+version = "0.0.1-SNAPSHOT"
 
 java {
     toolchain {
@@ -21,35 +21,57 @@ configurations {
 
 repositories {
     mavenCentral()
+    gradlePluginPortal()
     maven {
         url "https://repo.maven.apache.org/maven2"
     }
 }
 
 ext {
-    set('springCloudVersion', "2024.0.1")
+    mapstructVersion = "1.6.3"
+    lombokMapstructBindingVersion = "0.2.0"
+    oracleJdbcVersion = "21.9.0.0"
+    h2Version = "2.2.224"
 }
+
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-actuator'
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.mapstruct:mapstruct:1.6.3'
-    implementation 'com.oracle.database.jdbc:ojdbc11:21.9.0.0'
+    // Spring Boot
+    implementation "org.springframework.boot:spring-boot-starter-actuator"
+    implementation "org.springframework.boot:spring-boot-starter-data-jpa"
+    implementation "org.springframework.boot:spring-boot-starter-web"
 
-    compileOnly 'org.projectlombok:lombok'
+    // Oracle JDBC driver
+    implementation "com.oracle.database.jdbc:ojdbc11:${oracleJdbcVersion}"
 
-    runtimeOnly 'com.oracle.database.jdbc:ojdbc11'
+    // MapStruct
+    implementation "org.mapstruct:mapstruct:${mapstructVersion}"
+    annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
+    testAnnotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
 
-    annotationProcessor 'org.projectlombok:lombok'
-    annotationProcessor 'org.mapstruct:mapstruct-processor:1.6.3'
+    // Lombok
+    compileOnly "org.projectlombok:lombok"
+    annotationProcessor "org.projectlombok:lombok"
+    annotationProcessor "org.projectlombok:lombok-mapstruct-binding:${lombokMapstructBindingVersion}"
+    testCompileOnly "org.projectlombok:lombok"
+    testAnnotationProcessor "org.projectlombok:lombok"
 
-    testImplementation 'com.h2database:h2:2.2.224'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'org.springframework.boot:spring-boot-testcontainers'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    // H2 para testes
+    testImplementation "com.h2database:h2:${h2Version}"
+
+    // Testes
+    testImplementation "org.springframework.boot:spring-boot-starter-test"
+    testRuntimeOnly "org.junit.platform:junit-platform-launcher"
 }
 
-tasks.named('test') {
+compileJava {
+    options.compilerArgs += [
+            "-Amapstruct.suppressGeneratorTimestamp=true",
+            "-Amapstruct.suppressGeneratorVersionInfoComment=true",
+            "-Amapstruct.verbose=true"
+    ]
+}
+
+tasks.named("test") {
     useJUnitPlatform()
 }

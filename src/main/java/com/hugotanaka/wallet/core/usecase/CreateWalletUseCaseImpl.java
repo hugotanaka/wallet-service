@@ -24,7 +24,8 @@ public class CreateWalletUseCaseImpl implements CreateWalletUseCase {
                 UUID.randomUUID(),
                 userId,
                 BigDecimal.ZERO,
-                LocalDateTime.now()
+                LocalDateTime.now(),
+                null
         );
         return persistencePort.save(wallet);
     }

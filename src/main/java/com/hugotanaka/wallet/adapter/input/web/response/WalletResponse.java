@@ -12,4 +12,5 @@ public class WalletResponse {
     private UUID userId;
     private BigDecimal balance;
     private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }

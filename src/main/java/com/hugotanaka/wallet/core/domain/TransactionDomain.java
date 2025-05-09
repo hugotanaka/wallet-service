@@ -18,5 +18,5 @@ public class TransactionDomain {
     private UUID targetWalletId;
     private BigDecimal amount;
     private TransactionType type;
-    private LocalDateTime timestamp;
+    private LocalDateTime createdAt;
 }

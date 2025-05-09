@@ -15,9 +15,11 @@ public class WalletPersistenceAdapter implements CreateWalletPersistencePort {
     private final WalletPersistenceMapper walletPersistenceMapper;
 
     @Override
-    public WalletDomain save(WalletDomain wallet) {
+    public WalletDomain save(final WalletDomain wallet) {
         return walletPersistenceMapper.toDomain(
-                walletRepository.save(walletPersistenceMapper.toEntity(wallet))
+                walletRepository.save(
+                        walletPersistenceMapper.toEntity(wallet)
+                )
         );
     }
 }

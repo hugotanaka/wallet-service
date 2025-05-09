@@ -16,6 +16,7 @@ public class WalletDomain {
     private UUID userId;
     private BigDecimal balance;
     private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
     public void deposit(BigDecimal amount) {
         balance = balance.add(amount);
