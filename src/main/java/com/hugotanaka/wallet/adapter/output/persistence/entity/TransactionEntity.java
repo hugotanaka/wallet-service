@@ -16,26 +16,25 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Data
 @Entity
-@Table(name = "transaction")
+@Table(name = "transactions")
 @NoArgsConstructor
 @AllArgsConstructor
 public class TransactionEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    private String id;
 
     @Column(name = "id_source_wallet", nullable = false, updatable = false)
-    private UUID sourceWalletId;
+    private String sourceWalletId;
 
     @Column(name = "id_target_wallet", nullable = false, updatable = false)
-    private UUID targetWalletId;
+    private String targetWalletId;
 
-    @Column(name = "num_balance", nullable = false)
+    @Column(name = "num_amount", nullable = false)
     private BigDecimal amount;
 
     @Enumerated(EnumType.STRING)

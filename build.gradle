@@ -56,6 +56,10 @@ dependencies {
     testCompileOnly "org.projectlombok:lombok"
     testAnnotationProcessor "org.projectlombok:lombok"
 
+    // Flyway
+    implementation 'org.flywaydb:flyway-core'
+    implementation 'org.flywaydb:flyway-database-oracle'
+
     // H2 para testes
     testImplementation "com.h2database:h2:${h2Version}"
 

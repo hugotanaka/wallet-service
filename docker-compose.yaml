@@ -3,12 +3,11 @@ version: '3.8'
 services:
   oracle-db:
     image: gvenzl/oracle-xe:21.3.0-slim
-    container_name: oracle-wallet-db
+    container_name: wallet-service.db
     ports:
       - "1521:1521"
     environment:
       ORACLE_PASSWORD: admin
-      ORACLE_DATABASE: WALLETDB
     healthcheck:
       test: ["CMD", "sqlplus", "-L", "system/admin@//localhost:1521/XEPDB1"]
       interval: 30s

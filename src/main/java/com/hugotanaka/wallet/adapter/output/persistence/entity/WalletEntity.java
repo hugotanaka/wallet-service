@@ -14,7 +14,6 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Data
 @Entity
@@ -25,10 +24,10 @@ public class WalletEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    private String id;
 
     @Column(name = "id_user", nullable = false, updatable = false)
-    private UUID userId;
+    private String userId;
 
     @Column(name = "num_balance", nullable = false)
     private BigDecimal balance;
