@@ -16,7 +16,7 @@ class WalletWebMapperTest {
     private final WalletWebMapper mapper = Mappers.getMapper(WalletWebMapper.class);
 
     @Test
-    void shouldMapDomainToResponse() {
+    public void shouldMapDomainToResponse() {
         // given
         WalletDomain domain = new WalletDomain(UUID.randomUUID(), UUID.randomUUID());
         domain.setBalance(new BigDecimal("500.00"));

@@ -1,9 +1,13 @@
 package com.hugotanaka.wallet.adapter.output.persistence.mapper;
 
 import com.hugotanaka.wallet.adapter.output.persistence.entity.WalletEntity;
+import com.hugotanaka.wallet.adapter.output.persistence.mapper.converter.MapperConverter;
 import com.hugotanaka.wallet.core.domain.WalletDomain;
 import org.junit.jupiter.api.Test;
-import org.mapstruct.factory.Mappers;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -11,16 +15,24 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 class WalletPersistenceMapperTest {
 
-    private final WalletPersistenceMapper mapper = Mappers.getMapper(WalletPersistenceMapper.class);
+    @Mock
+    private MapperConverter converter;
+
+    @InjectMocks
+    private WalletPersistenceMapperImpl mapper;
 
     @Test
-    void shouldMapDomainToEntity() {
+    public void shouldMapDomainToEntity() {
         // given
         UUID id = UUID.randomUUID();
         WalletDomain domain = new WalletDomain(id, UUID.randomUUID());
+        when(converter.convertUUIDToString(any())).thenCallRealMethod();
 
         // when
         WalletEntity entity = mapper.toEntity(domain);
@@ -34,7 +46,7 @@ class WalletPersistenceMapperTest {
     }
 
     @Test
-    void shouldMapEntityToDomain() {
+    public void shouldMapEntityToDomain() {
         // given
         WalletEntity entity = new WalletEntity(
                 UUID.randomUUID().toString(),
@@ -43,6 +55,7 @@ class WalletPersistenceMapperTest {
                 LocalDateTime.now(),
                 LocalDateTime.now()
         );
+        when(converter.convertStringToUUID(any())).thenCallRealMethod();
 
         // when
         WalletDomain domain = mapper.toDomain(entity);

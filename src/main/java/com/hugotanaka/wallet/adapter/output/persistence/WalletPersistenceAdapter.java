@@ -4,6 +4,7 @@ import com.hugotanaka.wallet.adapter.output.persistence.mapper.WalletPersistence
 import com.hugotanaka.wallet.adapter.output.persistence.repository.WalletRepository;
 import com.hugotanaka.wallet.core.domain.WalletDomain;
 import com.hugotanaka.wallet.core.port.output.CreateWalletPersistencePort;
+import com.hugotanaka.wallet.core.port.output.RetrieveWalletPersistencePort;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +15,7 @@ import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
-public class WalletPersistenceAdapter implements CreateWalletPersistencePort {
+public class WalletPersistenceAdapter implements CreateWalletPersistencePort, RetrieveWalletPersistencePort {
 
     private static final Logger log = LoggerFactory.getLogger(WalletPersistenceAdapter.class);
 
@@ -35,6 +36,12 @@ public class WalletPersistenceAdapter implements CreateWalletPersistencePort {
     public Optional<WalletDomain> findByUserId(UUID userId) {
         log.info("c=WalletPersistenceAdapter, m=findByUserId, msg=Finding wallet by userId: {}", userId);
         return walletRepository.findByUserId(userId.toString())
+                .map(walletPersistenceMapper::toDomain);
+    }
+
+    @Override
+    public Optional<WalletDomain> findById(UUID walletId) {
+        return walletRepository.findById(walletId.toString())
                 .map(walletPersistenceMapper::toDomain);
     }
 }

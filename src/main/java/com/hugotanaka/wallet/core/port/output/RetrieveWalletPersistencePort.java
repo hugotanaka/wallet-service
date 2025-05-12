@@ -5,7 +5,9 @@ import com.hugotanaka.wallet.core.domain.WalletDomain;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface CreateWalletPersistencePort {
+public interface RetrieveWalletPersistencePort {
 
-    WalletDomain save(WalletDomain wallet);
+    Optional<WalletDomain> findById(UUID walletId);
+
+    Optional<WalletDomain> findByUserId(UUID userId);
 }
