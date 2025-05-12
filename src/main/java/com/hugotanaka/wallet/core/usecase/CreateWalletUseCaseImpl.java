@@ -4,6 +4,7 @@ import com.hugotanaka.wallet.core.domain.WalletDomain;
 import com.hugotanaka.wallet.core.port.input.CreateWalletUseCase;
 import com.hugotanaka.wallet.core.port.input.RetrieveWalletUseCase;
 import com.hugotanaka.wallet.core.port.output.CreateWalletPersistencePort;
+import com.newrelic.api.agent.NewRelic;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +27,7 @@ public class CreateWalletUseCaseImpl implements CreateWalletUseCase {
     @Transactional
     public WalletDomain create(UUID userId) {
         log.info("c=CreateWalletUseCaseImpl, m=create, msg=Creating wallet for user: {}", userId);
+        long start = System.currentTimeMillis();
 
         Optional<WalletDomain> existingWallet = retrieveWalletUseCase.findByUserId(userId);
         if (existingWallet.isPresent()) {
@@ -33,6 +35,14 @@ public class CreateWalletUseCaseImpl implements CreateWalletUseCase {
             return existingWallet.get();
         }
 
-        return createWalletPersistencePort.save(new WalletDomain(UUID.randomUUID(), userId));
+        WalletDomain saved = createWalletPersistencePort.save(new WalletDomain(UUID.randomUUID(), userId));
+
+        long duration = System.currentTimeMillis() - start;
+        log.info("c=CreateWalletUseCaseImpl, m=create, msg=Created Wallet id={} for userId={} in {}ms", saved.getId(), userId, duration);
+
+        NewRelic.recordMetric("Custom/CreateWallet.duration", duration);
+        NewRelic.incrementCounter("Custom/CreateWallet.count");
+
+        return saved;
     }
 }

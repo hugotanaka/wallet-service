@@ -32,6 +32,7 @@ ext {
     lombokMapstructBindingVersion = "0.2.0"
     oracleJdbcVersion = "21.9.0.0"
     h2Version = "2.2.224"
+    newRelicAgentVersion = "7.5.0"
 }
 
 
@@ -55,6 +56,9 @@ dependencies {
     annotationProcessor "org.projectlombok:lombok-mapstruct-binding:${lombokMapstructBindingVersion}"
     testCompileOnly "org.projectlombok:lombok"
     testAnnotationProcessor "org.projectlombok:lombok"
+
+    // New Relic API agent
+    implementation "com.newrelic.agent.java:newrelic-api:${newRelicAgentVersion}"
 
     // Flyway
     implementation 'org.flywaydb:flyway-core'
