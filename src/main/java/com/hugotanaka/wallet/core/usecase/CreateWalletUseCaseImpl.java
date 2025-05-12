@@ -4,29 +4,33 @@ import com.hugotanaka.wallet.core.domain.WalletDomain;
 import com.hugotanaka.wallet.core.port.input.CreateWalletUseCase;
 import com.hugotanaka.wallet.core.port.output.CreateWalletPersistencePort;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class CreateWalletUseCaseImpl implements CreateWalletUseCase {
 
+    private static final Logger log = LoggerFactory.getLogger(CreateWalletUseCaseImpl.class);
+
     private final CreateWalletPersistencePort persistencePort;
 
     @Override
     @Transactional
     public WalletDomain create(UUID userId) {
-        WalletDomain wallet = new WalletDomain(
-                UUID.randomUUID(),
-                userId,
-                BigDecimal.ZERO,
-                LocalDateTime.now(),
-                null
-        );
-        return persistencePort.save(wallet);
+        log.info("c=CreateWalletUseCaseImpl, m=create, msg=Creating wallet for user: {}", userId);
+
+        Optional<WalletDomain> existingWallet = persistencePort.findByUserId(userId);
+        if (existingWallet.isPresent()) {
+            log.warn("c=CreateWalletUseCaseImpl, m=create, msg=Wallet already exists for user: {}", userId);
+                return existingWallet.get();
+        }
+
+        return persistencePort.save(new WalletDomain(UUID.randomUUID(), userId));
     }
 }

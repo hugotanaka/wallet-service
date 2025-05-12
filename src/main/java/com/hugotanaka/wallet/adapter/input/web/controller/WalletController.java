@@ -23,7 +23,8 @@ public class WalletController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public WalletResponse create(@RequestBody CreateWalletRequest request) {
-        var wallet = createWalletUseCase.create(request.getUserId());
-        return walletWebMapper.toResponse(wallet);
+        return walletWebMapper.toResponse(
+                createWalletUseCase.create(request.getUserId())
+        );
     }
 }

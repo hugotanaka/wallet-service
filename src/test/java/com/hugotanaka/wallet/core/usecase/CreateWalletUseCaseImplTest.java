@@ -31,17 +31,7 @@ public class CreateWalletUseCaseImplTest {
     public void shouldCreateWalletSuccessfully() {
         // given
         UUID userId = UUID.randomUUID();
-
-        when(mockPort.save(any())).thenAnswer(invocation -> {
-            WalletDomain arg = invocation.getArgument(0);
-            return new WalletDomain(
-                    UUID.randomUUID(),
-                    arg.getUserId(),
-                    arg.getBalance(),
-                    arg.getCreatedAt(),
-                    arg.getUpdatedAt()
-            );
-        });
+        when(mockPort.save(any())).thenReturn(new WalletDomain(UUID.randomUUID(), userId));
 
         // when
         WalletDomain result = useCase.create(userId);
