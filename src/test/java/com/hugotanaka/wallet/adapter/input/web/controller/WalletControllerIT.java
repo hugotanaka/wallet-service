@@ -12,12 +12,15 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -32,6 +35,8 @@ public class WalletControllerIT {
 
     @Autowired
     private CreateWalletUseCase createWalletUseCase;
+
+    private DateTimeFormatter fmt = DateTimeFormatter.ISO_DATE_TIME;
 
     @Test
     public void shouldCreateWallet() throws Exception {
@@ -61,6 +66,25 @@ public class WalletControllerIT {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.walletId").value(id.toString()))
                 .andExpect(jsonPath("$.balance").value(BigDecimal.ZERO.toString()));
+    }
+
+    @Test
+    void shouldReturnOnlyRecordsWithinPeriod() throws Exception {
+        // given
+        UUID walletId = createWallet(UUID.randomUUID());
+        LocalDateTime start = LocalDateTime.now().minusDays(2);
+        LocalDateTime end = LocalDateTime.now().plusDays(2);
+
+        // when and then
+        mockMvc.perform(get("/wallets/{walletId}/balances/histories", walletId)
+                        .param("start", start.format(fmt))
+                        .param("end", end.format(fmt))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").exists())
+                .andExpect(jsonPath("$[0].walletId").value(walletId.toString()))
+                .andExpect(jsonPath("$[0].balance").value(BigDecimal.ZERO.toString()))
+                .andExpect(jsonPath("$[0].createdAt").exists());
     }
 
     private UUID createWallet(UUID userId) {

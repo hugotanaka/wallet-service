@@ -1,6 +1,7 @@
 package com.hugotanaka.wallet.core.usecase;
 
 import com.hugotanaka.wallet.core.domain.WalletDomain;
+import com.hugotanaka.wallet.core.port.input.CreateBalanceHistoryUseCase;
 import com.hugotanaka.wallet.core.port.input.CreateWalletUseCase;
 import com.hugotanaka.wallet.core.port.input.RetrieveWalletUseCase;
 import com.hugotanaka.wallet.core.port.output.CreateWalletPersistencePort;
@@ -22,6 +23,7 @@ public class CreateWalletUseCaseImpl implements CreateWalletUseCase {
 
     private final CreateWalletPersistencePort createWalletPersistencePort;
     private final RetrieveWalletUseCase retrieveWalletUseCase;
+    private final CreateBalanceHistoryUseCase createBalanceHistoryUseCase;
 
     @Override
     @Transactional
@@ -36,6 +38,7 @@ public class CreateWalletUseCaseImpl implements CreateWalletUseCase {
         }
 
         WalletDomain saved = createWalletPersistencePort.save(new WalletDomain(UUID.randomUUID(), userId));
+        createBalanceHistoryUseCase.create(saved.getId(), saved.getBalance());
 
         long duration = System.currentTimeMillis() - start;
         log.info("c=CreateWalletUseCaseImpl, m=create, msg=Created Wallet id={} for userId={} in {}ms", saved.getId(), userId, duration);

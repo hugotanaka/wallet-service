@@ -5,5 +5,7 @@ CREATE TABLE transactions (
     num_amount          NUMBER(19,2)    NOT NULL,
     ind_type            VARCHAR2(20)    NOT NULL,
     dat_creation        TIMESTAMP       DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    CONSTRAINT pk_transaction PRIMARY KEY (id)
+    CONSTRAINT pk_transaction PRIMARY KEY (id),
+    CONSTRAINT fk_transaction_source_wallet FOREIGN KEY (id_source_wallet) REFERENCES wallet(id),
+    CONSTRAINT fk_transaction_target_wallet FOREIGN KEY (id_target_wallet) REFERENCES wallet(id)
 );

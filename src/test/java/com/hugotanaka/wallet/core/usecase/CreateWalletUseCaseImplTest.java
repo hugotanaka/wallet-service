@@ -1,5 +1,6 @@
 package com.hugotanaka.wallet.core.usecase;
 
+import com.hugotanaka.wallet.core.domain.BalanceHistoryDomain;
 import com.hugotanaka.wallet.core.domain.WalletDomain;
 import com.hugotanaka.wallet.core.port.output.CreateWalletPersistencePort;
 import org.junit.jupiter.api.Test;
@@ -28,6 +29,9 @@ public class CreateWalletUseCaseImplTest {
     @Mock
     private RetrieveWalletUseCaseImpl retrieveWalletUseCase;
 
+    @Mock
+    private CreateBalanceHistoryUseCaseImpl createBalanceHistoryUseCase;
+
     @InjectMocks
     private CreateWalletUseCaseImpl createWalletUseCase;
 
@@ -37,6 +41,7 @@ public class CreateWalletUseCaseImplTest {
         UUID userId = UUID.randomUUID();
         when(mockPort.save(any())).thenReturn(new WalletDomain(UUID.randomUUID(), userId));
         when(retrieveWalletUseCase.findByUserId(userId)).thenReturn(Optional.empty());
+        when(createBalanceHistoryUseCase.create(any(), any())).thenReturn(new BalanceHistoryDomain());
 
         // when
         WalletDomain result = createWalletUseCase.create(userId);
@@ -48,6 +53,7 @@ public class CreateWalletUseCaseImplTest {
         assertNotNull(result.getCreatedAt());
         verify(retrieveWalletUseCase, times(1)).findByUserId(any());
         verify(mockPort, times(1)).save(any());
+        verify(createBalanceHistoryUseCase, times(1)).create(any(), any());
     }
 
     @Test
@@ -64,5 +70,6 @@ public class CreateWalletUseCaseImplTest {
         assertEquals(existingWallet, result);
         verify(retrieveWalletUseCase, times(1)).findByUserId(any());
         verify(mockPort, times(0)).save(any());
+        verify(createBalanceHistoryUseCase, times(0)).create(any(), any());
     }
 }

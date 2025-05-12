@@ -1,6 +1,8 @@
 package com.hugotanaka.wallet.adapter.output.persistence;
 
+import com.hugotanaka.wallet.adapter.output.persistence.mapper.BalanceHistoryPersistenceMapper;
 import com.hugotanaka.wallet.adapter.output.persistence.mapper.WalletPersistenceMapper;
+import com.hugotanaka.wallet.adapter.output.persistence.repository.BalanceHistoryRepository;
 import com.hugotanaka.wallet.adapter.output.persistence.repository.WalletRepository;
 import com.hugotanaka.wallet.core.domain.WalletDomain;
 import com.hugotanaka.wallet.core.port.output.CreateWalletPersistencePort;
@@ -20,7 +22,9 @@ public class WalletPersistenceAdapter implements CreateWalletPersistencePort, Re
     private static final Logger log = LoggerFactory.getLogger(WalletPersistenceAdapter.class);
 
     private final WalletRepository walletRepository;
+    private final BalanceHistoryRepository balanceHistoryRepository;
     private final WalletPersistenceMapper walletPersistenceMapper;
+    private final BalanceHistoryPersistenceMapper balanceHistoryPersistenceMapper;
 
     @Override
     public WalletDomain save(final WalletDomain wallet) {
@@ -41,6 +45,7 @@ public class WalletPersistenceAdapter implements CreateWalletPersistencePort, Re
 
     @Override
     public Optional<WalletDomain> findById(UUID walletId) {
+        log.info("c=WalletPersistenceAdapter, m=findById, msg=Finding wallet by id: {}", walletId);
         return walletRepository.findById(walletId.toString())
                 .map(walletPersistenceMapper::toDomain);
     }
