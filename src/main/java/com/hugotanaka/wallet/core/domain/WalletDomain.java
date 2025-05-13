@@ -28,9 +28,6 @@ public class WalletDomain {
     }
 
     public void withdraw(BigDecimal amount) {
-        if (balance.compareTo(amount) < 0) {
-            throw new IllegalArgumentException("Saldo insuficiente");
-        }
         balance = balance.subtract(amount);
     }
 }

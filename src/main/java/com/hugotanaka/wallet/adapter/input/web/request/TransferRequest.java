@@ -10,8 +10,9 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class DepositRequest {
-    private UUID walletId;
+public class TransferRequest {
+    private UUID sourceWalletId;
+    private UUID targetWalletId;
     private UUID externalReferenceId;
     private BigDecimal amount;
 }

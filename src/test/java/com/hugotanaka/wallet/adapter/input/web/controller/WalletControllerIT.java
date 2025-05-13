@@ -1,14 +1,16 @@
 package com.hugotanaka.wallet.adapter.input.web.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hugotanaka.wallet.IntegrationTests;
 import com.hugotanaka.wallet.adapter.input.web.request.CreateWalletRequest;
+import com.hugotanaka.wallet.adapter.input.web.request.DepositRequest;
+import com.hugotanaka.wallet.adapter.input.web.request.TransferRequest;
+import com.hugotanaka.wallet.adapter.input.web.request.WithdrawRequest;
 import com.hugotanaka.wallet.core.port.input.CreateWalletUseCase;
+import com.hugotanaka.wallet.core.port.input.DepositFundsUseCase;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
@@ -21,11 +23,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-
-@SpringBootTest
-@ActiveProfiles("test")
-@AutoConfigureMockMvc
-public class WalletControllerIT {
+public class WalletControllerIT extends IntegrationTests {
 
     @Autowired
     private MockMvc mockMvc;
@@ -36,7 +34,12 @@ public class WalletControllerIT {
     @Autowired
     private CreateWalletUseCase createWalletUseCase;
 
+    @Autowired
+    private DepositFundsUseCase depositFundsUseCase;
+
     private DateTimeFormatter fmt = DateTimeFormatter.ISO_DATE_TIME;
+
+    private static final String BASE_URL = "/wallets";
 
     @Test
     public void shouldCreateWallet() throws Exception {
@@ -45,7 +48,7 @@ public class WalletControllerIT {
         request.setUserId(UUID.randomUUID());
 
         // when and then
-        mockMvc.perform(post("/wallets")
+        mockMvc.perform(post(BASE_URL)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
@@ -62,7 +65,7 @@ public class WalletControllerIT {
         UUID id = createWallet(UUID.randomUUID());
 
         // when and then
-        mockMvc.perform(get("/wallets/{walletId}/balances", id))
+        mockMvc.perform(get(BASE_URL + "/{walletId}/balances", id))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.walletId").value(id.toString()))
                 .andExpect(jsonPath("$.balance").value(BigDecimal.ZERO.toString()));
@@ -76,7 +79,7 @@ public class WalletControllerIT {
         LocalDateTime end = LocalDateTime.now().plusDays(2);
 
         // when and then
-        mockMvc.perform(get("/wallets/{walletId}/balances/histories", walletId)
+        mockMvc.perform(get(BASE_URL + "/{walletId}/balances/histories", walletId)
                         .param("start", start.format(fmt))
                         .param("end", end.format(fmt))
                         .accept(MediaType.APPLICATION_JSON))
@@ -87,7 +90,54 @@ public class WalletControllerIT {
                 .andExpect(jsonPath("$[0].createdAt").exists());
     }
 
+    @Test
+    public void shouldDepositFundsInWallet() throws Exception {
+        // given
+        UUID walletId = createWallet(UUID.randomUUID());
+        DepositRequest request = new DepositRequest(walletId, UUID.randomUUID(), BigDecimal.TEN);
+
+        // when and then
+        mockMvc.perform(post(BASE_URL + "/deposits")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    public void shouldWithdrawWalletFunds() throws Exception {
+        // given
+        UUID walletId = createWallet(UUID.randomUUID());
+        depositFunds(walletId, new BigDecimal("100.00"));
+        WithdrawRequest request = new WithdrawRequest(walletId, UUID.randomUUID(), BigDecimal.TEN);
+
+        // when and then
+        mockMvc.perform(post(BASE_URL + "/withdrawals")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    public void shouldTransferWalletFunds() throws Exception {
+        // given
+        UUID sourceWalletId = createWallet(UUID.randomUUID());
+        UUID targetWalletId = createWallet(UUID.randomUUID());
+        depositFunds(sourceWalletId, new BigDecimal("100.00"));
+        depositFunds(targetWalletId, new BigDecimal("100.00"));
+        TransferRequest request = new TransferRequest(sourceWalletId, targetWalletId, UUID.randomUUID(), BigDecimal.TEN);
+
+        // when and then
+        mockMvc.perform(post(BASE_URL + "/transfers")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isNoContent());
+    }
+
     private UUID createWallet(UUID userId) {
         return createWalletUseCase.create(userId).getId();
+    }
+
+    private void depositFunds(UUID walletId, BigDecimal amount) {
+        depositFundsUseCase.deposit(walletId, amount, UUID.randomUUID());
     }
 }

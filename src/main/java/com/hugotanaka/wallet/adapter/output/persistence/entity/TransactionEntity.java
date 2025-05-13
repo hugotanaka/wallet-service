@@ -28,11 +28,14 @@ public class TransactionEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
-    @Column(name = "id_source_wallet", nullable = false, updatable = false)
+    @Column(name = "id_source_wallet", updatable = false)
     private String sourceWalletId;
 
-    @Column(name = "id_target_wallet", nullable = false, updatable = false)
+    @Column(name = "id_target_wallet", updatable = false)
     private String targetWalletId;
+
+    @Column(name = "id_external_reference", nullable = false, updatable = false)
+    private String externalReferenceId;
 
     @Column(name = "num_amount", nullable = false)
     private BigDecimal amount;

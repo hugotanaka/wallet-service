@@ -1,6 +1,6 @@
 package com.hugotanaka.wallet.adapter.input.web.advice;
 
-import com.hugotanaka.wallet.core.exceptions.ResourceNotFoundException;
+import com.hugotanaka.wallet.core.exceptions.WalletNotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;
@@ -40,9 +40,9 @@ public class ControllerAdvice {
         return errors;
     }
 
-    @ExceptionHandler(ResourceNotFoundException.class)
+    @ExceptionHandler(WalletNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public String handleResourceNotFound(ResourceNotFoundException ex) {
+    public String handleResourceNotFound(WalletNotFoundException ex) {
         return ex.getMessage();
     }
 

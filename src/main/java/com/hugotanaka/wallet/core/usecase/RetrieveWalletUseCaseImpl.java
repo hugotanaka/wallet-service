@@ -1,7 +1,7 @@
 package com.hugotanaka.wallet.core.usecase;
 
 import com.hugotanaka.wallet.core.domain.WalletDomain;
-import com.hugotanaka.wallet.core.exceptions.ResourceNotFoundException;
+import com.hugotanaka.wallet.core.exceptions.WalletNotFoundException;
 import com.hugotanaka.wallet.core.port.input.RetrieveWalletUseCase;
 import com.hugotanaka.wallet.core.port.output.RetrieveWalletPersistencePort;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +27,7 @@ public class RetrieveWalletUseCaseImpl implements RetrieveWalletUseCase {
         log.info("c=RetrieveWalletUseCaseImpl, m=retrieveById, msg=Finding wallet by id: {}", walletId);
 
         return persistencePort.findById(walletId)
-                .orElseThrow(() -> new ResourceNotFoundException("Wallet not found"));
+                .orElseThrow(() -> new WalletNotFoundException("Wallet not found"));
     }
 
     @Override

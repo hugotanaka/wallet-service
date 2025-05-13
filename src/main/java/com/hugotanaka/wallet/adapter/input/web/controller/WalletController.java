@@ -2,14 +2,22 @@ package com.hugotanaka.wallet.adapter.input.web.controller;
 
 import com.hugotanaka.wallet.adapter.input.web.mapper.BalanceHistoryWebMapper;
 import com.hugotanaka.wallet.adapter.input.web.mapper.BalanceWebMapper;
+import com.hugotanaka.wallet.adapter.input.web.mapper.TransactionWebMapper;
 import com.hugotanaka.wallet.adapter.input.web.mapper.WalletWebMapper;
 import com.hugotanaka.wallet.adapter.input.web.request.CreateWalletRequest;
+import com.hugotanaka.wallet.adapter.input.web.request.DepositRequest;
+import com.hugotanaka.wallet.adapter.input.web.request.TransferRequest;
+import com.hugotanaka.wallet.adapter.input.web.request.WithdrawRequest;
 import com.hugotanaka.wallet.adapter.input.web.response.BalanceHistoryResponse;
 import com.hugotanaka.wallet.adapter.input.web.response.BalanceResponse;
+import com.hugotanaka.wallet.adapter.input.web.response.TransactionResponse;
 import com.hugotanaka.wallet.adapter.input.web.response.WalletResponse;
 import com.hugotanaka.wallet.core.port.input.CreateWalletUseCase;
+import com.hugotanaka.wallet.core.port.input.DepositFundsUseCase;
 import com.hugotanaka.wallet.core.port.input.RetrieveBalanceHistoryUseCase;
 import com.hugotanaka.wallet.core.port.input.RetrieveWalletUseCase;
+import com.hugotanaka.wallet.core.port.input.TransferFundsUseCase;
+import com.hugotanaka.wallet.core.port.input.WithdrawFundsUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -37,7 +45,10 @@ public class WalletController {
     private final BalanceWebMapper balanceWebMapper;
     private final RetrieveBalanceHistoryUseCase retrieveBalanceHistoryUseCase;
     private final BalanceHistoryWebMapper balanceHistoryWebMapper;
-
+    private final DepositFundsUseCase depositFundsUseCase;
+    private final WithdrawFundsUseCase withdrawFundsUseCase;
+    private final TransferFundsUseCase transferFundsUseCase;
+    private final TransactionWebMapper transactionWebMapper;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -68,6 +79,43 @@ public class WalletController {
     ) {
         return balanceHistoryWebMapper.toResponseList(
                 retrieveBalanceHistoryUseCase.retrieveHistoryPerPeriod(walletId, start, end)
+        );
+    }
+
+    @PostMapping("/deposits")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public TransactionResponse deposit(@RequestBody DepositRequest request) {
+        return transactionWebMapper.toResponse(
+                depositFundsUseCase.deposit(
+                        request.getWalletId(),
+                        request.getAmount(),
+                        request.getExternalReferenceId()
+                )
+        );
+    }
+
+    @PostMapping("/withdrawals")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public TransactionResponse withdraw(@RequestBody WithdrawRequest request) {
+        return transactionWebMapper.toResponse(
+                withdrawFundsUseCase.withdraw(
+                        request.getWalletId(),
+                        request.getExternalReferenceId(),
+                        request.getAmount()
+                )
+        );
+    }
+
+    @PostMapping("/transfers")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public TransactionResponse transfer(@RequestBody TransferRequest request) {
+        return transactionWebMapper.toResponse(
+                transferFundsUseCase.transfer(
+                        request.getSourceWalletId(),
+                        request.getTargetWalletId(),
+                        request.getExternalReferenceId(),
+                        request.getAmount()
+                )
         );
     }
 }
